@@ -16,7 +16,7 @@
     cardImgList.push(['./images/card_opend_05.png','./images/card_opend_05.png']);
 
     var matchedCount = 0;
-    var gameOverCount = 5;
+    var flipChanceCount = 5;
 
     // cardItem 선언
     function Card(sx, sy, img, index, isClicked) {
@@ -182,23 +182,23 @@
             secondOpenedCard.isClicked = false;
             drawFlipCard(firstOpenedCard);
             drawFlipCard(secondOpenedCard);
-            gameOverCount--;
+            flipChanceCount--;
+            $('#flipChanceCount').html(flipChanceCount);
         }
     }
 
     function checkComplete(card) {
-        if (matchedCount < 5 && gameOverCount > 0) {
+        if (matchedCount < 5 && flipChanceCount > 0) {
             openCardList.splice(0);
             openCardList.splice(1);
         } else {
             if (matchedCount === 5) {
                 alert('다 맞췄다!');
             }
-            if (gameOverCount === 0) {
+            if (flipChanceCount === 0) {
                 alert('5회 틀림, 게임오버!!');
             }
         }
-        console.log('execute checkComplete()');
     }
 
     $(document).ready(function () {
@@ -208,12 +208,6 @@
 </head>
 <body>
 <canvas id="myCanvas" width="1500" height="700" style="border:1px solid #000000;"></canvas>
-<!--
-<img src="./images/card_opend_01.png" style="display:none;">
-<img src="./images/card_opend_02.png" style="display:none;">
-<img src="./images/card_opend_03.png" style="display:none;">
-<img src="./images/card_opend_04.png" style="display:none;">
-<img src="./images/card_opend_05.png" style="display:none;">
--->
+<p>남은 횟수 : <span id="flipChanceCount">5</span> / 5</p>
 </body>
 </html>
