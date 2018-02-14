@@ -15,6 +15,9 @@
     cardImgList.push(['./images/card_opend_04.png','./images/card_opend_04.png']);
     cardImgList.push(['./images/card_opend_05.png','./images/card_opend_05.png']);
 
+    var matchedCount = 0;
+    var gameOverCount = 5;
+
     // cardItem 선언
     function Card(sx, sy, img, index, isClicked) {
         this.sx = sx;
@@ -133,7 +136,7 @@
         var rect = canvas.getBoundingClientRect();
         var i, mouseX, mouseY, card;
         for (i = 0; i < deck.length; i++) {
-            console.log(deck[i]);
+            //console.log(deck[i]);
             card = deck[i];
             if (card.sx < 0) {
                 //console.log(card.sx);
@@ -148,7 +151,7 @@
                 if (mouseY > 0 && mouseY < cardHeight) {
                     // 클릭된 카드가 아니면 오픈
                     if (!card.isClicked) {
-                        console.log(card.isClicked);
+                        //console.log(card.isClicked);
                         drawOpenCard(card);
                         card.isClicked = true;
                         openCardList.push(card);
@@ -167,10 +170,34 @@
 
     //
     function matchOpenCardList(card) {
-        console.log('execute matchOpenCardList()');
+        var firstOpenedCard = openCardList[0];
+        var secondOpenedCard = openCardList[1];
+
+        if ($(firstOpenedCard.img).attr('src') === $(secondOpenedCard.img).attr('src')) {
+            console.log('matched!!');
+            matchedCount++;
+        } else {
+            console.log('not matched!!');
+            firstOpenedCard.isClicked = false;
+            secondOpenedCard.isClicked = false;
+            drawFlipCard(firstOpenedCard);
+            drawFlipCard(secondOpenedCard);
+            gameOverCount--;
+        }
     }
 
     function checkComplete(card) {
+        if (matchedCount < 5 && gameOverCount > 0) {
+            openCardList.splice(0);
+            openCardList.splice(1);
+        } else {
+            if (matchedCount === 5) {
+                alert('다 맞췄다!');
+            }
+            if (gameOverCount === 0) {
+                alert('5회 틀림, 게임오버!!');
+            }
+        }
         console.log('execute checkComplete()');
     }
 
@@ -180,7 +207,7 @@
     </script>
 </head>
 <body>
-<canvas id="myCanvas" width="1000" height="1500" style="border:1px solid #000000;"></canvas>
+<canvas id="myCanvas" width="1500" height="700" style="border:1px solid #000000;"></canvas>
 <!--
 <img src="./images/card_opend_01.png" style="display:none;">
 <img src="./images/card_opend_02.png" style="display:none;">
