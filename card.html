@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <title>Document</title>
+    <script src="http://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    var cardImgList = [];
+    cardImgList.push(['./images/card_opend_01.png','./images/card_opend_01.png']);
+    cardImgList.push(['./images/card_opend_02.png','./images/card_opend_02.png']);
+    cardImgList.push(['./images/card_opend_03.png','./images/card_opend_03.png']);
+    cardImgList.push(['./images/card_opend_04.png','./images/card_opend_04.png']);
+    cardImgList.push(['./images/card_opend_05.png','./images/card_opend_05.png']);
+
+    // cardItem 선언
+    function Card(sx, sy, img, index, isClicked) {
+        this.sx = sx;
+        this.sy = sy;
+        this.img = img;
+        this.index = index;
+    }
+
+    var ctx;
+    var canvas;
+    // 카드앞뒤 그리기 위한 컬러
+    var flipColor = 'rgb( 128, 128, 0)';
+    var clearColor = 'rgb( 255, 255, 255)';
+
+    // Card객체저장을 위한 배열및 위치참조 배열선언
+    var deck = [];
+    var deckPosition = [];
+    var gap = 30; // card간격
+
+    // 카드 시작위치 및 가로,세로 크기 변수
+    var startX = 30;
+    var startY = 50;
+    var cardWidth = 200;
+    var cardHeight = 260;
+
+    // 짝이 맞은 수를 체크하기 위한 count변수
+    var count = 0;
+    // 클릭한 카드를 저장한는 배열
+    var openCardList = [];
+
+    // init
+    function init() {
+        ctx = document.getElementById('myCanvas').getContext('2d');
+        canvas = document.getElementById('myCanvas');
+        canvas.addEventListener('click', onClickCard, false);
+        makeCardDeck();
+        shuffleCard();
+    }
+
+    // 카드 순서를 섞는데 사용하기 위해 card 의 위치값을 deckPosition 배열에 저장
+    function createCardItem(src, px, py, cardIndex) {
+        var pic = new Image();
+        pic.src = src;
+        var card = new Card(px, py, pic, cardIndex, false);
+        drawFlipCard(card);
+        return card;
+    }
+
+    function makeCardDeck() {
+        var i, posx, posy;
+        for (i = 0; i < cardImgList.length; i++) {
+            posx = startX + (cardWidth + gap) * i;
+            posy = startY + (cardHeight + gap) * 0;
+            deck.push(createCardItem(cardImgList[i][0], posx, posy, i));
+            deckPosition.push({
+                x : posx,
+                y : posy
+            });
+
+            posy = startY + (cardHeight + gap) * 1;
+            deck.push(createCardItem(cardImgList[i][1], posx, posy, i));
+            deckPosition.push({
+                x : posx,
+                y : posy
+            });
+        }
+    }
+
+    // 카드 순서 섞기
+    function shuffleCard() {
+        function shuffleItem(item1, item2) {
+            return Math.random() - 0.5;
+        }
+        var i;
+        for (i = 0; i < 5; i++) {
+            deckPosition.sort(shuffleItem);
+        }
+
+        var card, position;
+        for (i = 0; i < deckPosition.length; i++) {
+            card = deck[i];
+            position = deckPosition[i];
+            card.sx = position.x;
+            card.sy = position.y;
+            card.isClicked = false;
+        }
+    }
+
+    // 뒤집어진 카드 그리기
+    function drawFlipCard(card) {
+        ctx.fillStyle = flipColor;
+        ctx.fillRect(card.sx, card.sy, cardWidth, cardHeight);
+    }
+
+    // 제거된 카드 그리기
+    function drawClearCard(card) {
+        ctx.fillStyle = clearColor;
+        ctx.fillRect(card.sx, card.sy, cardWidth, cardHeight);
+        card.sx = -1;
+        card.sy = -1;
+        card.isClicked = true;
+    }
+
+    // 오픈된 카드 그리기
+    function drawOpenCard(card) {
+        ctx.drawImage(card.img, card.sx, card.sy, cardWidth, cardHeight);
+    }
+
+    // 카드 클릭 이벤트
+    function onClickCard(event) {
+        if (openCardList.length == 2) {
+            return;
+        } else {
+            //console.log(openCardList.length);
+        }
+        var rect = canvas.getBoundingClientRect();
+        var i, mouseX, mouseY, card;
+        for (i = 0; i < deck.length; i++) {
+            console.log(deck[i]);
+            card = deck[i];
+            if (card.sx < 0) {
+                //console.log(card.sx);
+                continue;
+            } else {
+                //console.log(card.sx);
+            }
+            mouseX = event.clientX - rect.left - card.sx;
+            mouseY = event.clientY - rect.top - card.sy;
+
+            if (mouseX > 0 && mouseX < cardWidth) {
+                if (mouseY > 0 && mouseY < cardHeight) {
+                    // 클릭된 카드가 아니면 오픈
+                    if (!card.isClicked) {
+                        console.log(card.isClicked);
+                        drawOpenCard(card);
+                        card.isClicked = true;
+                        openCardList.push(card);
+                    } else {
+                        //console.log(card.isClicked);
+                    }
+                }
+            }
+        }
+
+        if (openCardList.length == 2) {
+            setTimeout(matchOpenCardList, 500);
+            setTimeout(checkComplete, 510);
+        }
+    }
+
+    //
+    function matchOpenCardList(card) {
+        console.log('execute matchOpenCardList()');
+    }
+
+    function checkComplete(card) {
+        console.log('execute checkComplete()');
+    }
+
+    $(document).ready(function () {
+        init();
+    });
+    </script>
+</head>
+<body>
+<canvas id="myCanvas" width="1000" height="1500" style="border:1px solid #000000;"></canvas>
+<!--
+<img src="./images/card_opend_01.png" style="display:none;">
+<img src="./images/card_opend_02.png" style="display:none;">
+<img src="./images/card_opend_03.png" style="display:none;">
+<img src="./images/card_opend_04.png" style="display:none;">
+<img src="./images/card_opend_05.png" style="display:none;">
+-->
+</body>
+</html>
