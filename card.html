@@ -17,6 +17,7 @@
 
     var matchedCount = 0;
     var flipChanceCount = 5;
+    var failCount = 0;
 
     // cardItem 선언
     function Card(sx, sy, img, index, isClicked) {
@@ -48,6 +49,9 @@
     // 클릭한 카드를 저장한는 배열
     var openCardList = [];
 
+    var gameTime = 10 * 1;
+    var gameTimer;
+
     // init
     function init() {
         ctx = document.getElementById('myCanvas').getContext('2d');
@@ -55,6 +59,7 @@
         canvas.addEventListener('click', onClickCard, false);
         makeCardDeck();
         shuffleCard();
+        gameTimer = setInterval('startTimer()', 1000);
     }
 
     // 카드 순서를 섞는데 사용하기 위해 card 의 위치값을 deckPosition 배열에 저장
@@ -183,6 +188,8 @@
             drawFlipCard(firstOpenedCard);
             drawFlipCard(secondOpenedCard);
             flipChanceCount--;
+            failCount++;
+            $('#failCount').html(failCount);
             $('#flipChanceCount').html(flipChanceCount);
         }
     }
@@ -201,6 +208,17 @@
         }
     }
 
+    function startTimer() {
+        var m = (gameTime % 60);	// 남은 시간 계산
+        $('#gameTimer').html(m);
+        gameTime--;
+        console.log(gameTime);
+        if (gameTime < 0) {
+            clearInterval(gameTimer);
+            alert('타임 오버!');
+        }
+    }
+
     $(document).ready(function () {
         init();
     });
@@ -208,6 +226,8 @@
 </head>
 <body>
 <canvas id="myCanvas" width="1500" height="700" style="border:1px solid #000000;"></canvas>
+<p>틀린 횟수 : <span id="failCount">0</span></p>
 <p>남은 횟수 : <span id="flipChanceCount">5</span> / 5</p>
+<p>남은 시간 : <span id="gameTimer">10</span> 초</p>
 </body>
 </html>
